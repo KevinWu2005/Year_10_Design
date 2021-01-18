@@ -1,9 +1,15 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="YOUR_APP_CLIENT_ID",
-                                                           client_secret="YOUR_APP_CLIENT_SECRET"))
+justin_uri = 'spotify:artist:1uNFoZAHBGtllmzznpCI3s'
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id='a538e36f54ab4e678b89e639ed5502c1',
+                 client_secret='f077ad56247f4a4a80edb31d416b36d7'))
 
-results = sp.search(q='weezer', limit=20)
-for idx, track in enumerate(results['tracks']['items']):
-    print(idx, track['name'])
+results = spotify.artist_albums(justin_uri, album_type='album')
+albums = results['items']
+while results['next']:
+    results = spotify.next(results)
+    albums.extend(results['items'])
+
+for album in albums:
+    print(album['name'])

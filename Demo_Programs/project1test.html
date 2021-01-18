@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <title>Spotify API</title>
+    </head>
+    <body>
+        <script type = "text/javascript">
+        
+            var accessToken = ""
+            var url = "https://accounts.spotify.com/api/token";
+            var clientID = "";  //copy your client ID from your app
+            var secretID = "";  //copy your client secret from your app
+            var authID = btoa(clientID+":"+secretID);   //this is Base64 encoding required by Spotify
+            var artistID = "";
+
+            mainFunction();
+
+            //note the use of asynchronous functions here
+            //this is necessary to ensure that things happen in the correct order
+            //if you need to do a series of searches, the await is a necessary part of the procedure
+            //put additional searches in their own asynchronous functions to maintain the correct order
+            async function mainFunction()
+            {
+                await getAccessToken();
+                await getArtistID(accessToken);
+                await searchSpotify(accessToken);
+            }
+
+            async function getArtistID(accessToken)
+            {
+                https://api.spotify.com/v1/search?q=Daft+Punk&type=artist'
+
+                await fetch("https://api.spotify.com/v1/search?q="+artistName+"&type=artist",
+                {
+                    headers: 
+                    {
+                        Authorization: "Bearer " + accessToken
+                    }
+                })
+                .then((resp) => resp.json())
+                .then(function(data) 
+                {
+                    console.log(data);
+                    //console.log(data.id);
+                    //artistID = data.id;
+                })
+                .catch(function(error) 
+                {
+                    console.log(error);
+                });                
+
+            }
+            async function searchSpotify(accessToken)
+            {
+                //this is the example on the Spotify API page
+                //you can use any Spotify endpoint for general searches
+                await fetch("https://api.spotify.com/v1/tracks/"+artistID, 
+                {
+                    headers: 
+                    {
+                        Authorization: "Bearer " + accessToken
+                    }
+                })
+                .then((resp) => resp.json())
+                .then(function(data) 
+                {
+                    console.log(data);
+                })
+                .catch(function(error) 
+                {
+                    console.log(error);
+                });
+            }
+
+            async function getAccessToken()
+            {
+                await fetch(url, 
+                {
+                    body: "grant_type=client_credentials",
+                    headers: 
+                    {
+                        Authorization: "Basic "+authID,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    method: "POST"
+                })
+                .then((resp) => resp.json())
+                .then(function(data) 
+                {
+                    accessToken = data.access_token;
+                })
+                .catch(function(error) 
+                {
+                    console.log(error);
+                });
+            }
+
+        </script>
+    </body>
+</html>
